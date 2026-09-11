@@ -1,0 +1,3200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PACKBALL</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --green:#62ffb5;
+    --dark:#06100d;
+    --panel:#0b1c17;
+    --border:#20483a;
+    --text:#f5fff9;
+    --muted:#8ca79c;
+}
+
+body{
+    background:
+    radial-gradient(circle at 50% -10%,#17483a,#06100d 45%,#020605 100%);
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+button,input,select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+header{
+    height:72px;
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 24px;
+    background:rgba(3,12,9,.9);
+    backdrop-filter:blur(15px);
+    border-bottom:1px solid var(--border);
+}
+
+.logo{
+    font-size:25px;
+    font-weight:1000;
+    letter-spacing:2px;
+    color:var(--green);
+}
+
+.credits{
+    background:#102c23;
+    border:1px solid #34765e;
+    border-radius:30px;
+    padding:10px 17px;
+    font-weight:bold;
+    color:#ffe477;
+}
+
+main{
+    max-width:1150px;
+    margin:auto;
+    padding:25px 18px 110px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.hero{
+    padding:30px;
+    border:1px solid var(--border);
+    border-radius:25px;
+    background:
+    radial-gradient(circle at 80% 20%,rgba(91,255,180,.18),transparent 35%),
+    linear-gradient(145deg,#102d24,#07130f);
+    margin-bottom:22px;
+    overflow:hidden;
+    position:relative;
+}
+
+.hero:after{
+    content:"⚽";
+    position:absolute;
+    right:30px;
+    bottom:-25px;
+    font-size:150px;
+    opacity:.06;
+}
+
+.hero h1{
+    font-size:38px;
+    margin-bottom:8px;
+}
+
+.hero p{
+    color:var(--muted);
+}
+
+.stats-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-top:25px;
+}
+
+.stat{
+    background:#091a15;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:17px;
+}
+
+.stat span{
+    color:var(--muted);
+    display:block;
+    font-size:13px;
+    margin-bottom:7px;
+}
+
+.stat strong{
+    font-size:25px;
+}
+
+.panel{
+    background:rgba(9,27,21,.92);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:22px;
+    margin-bottom:20px;
+}
+
+.panel h2{
+    margin-bottom:18px;
+}
+
+.section-title{
+    margin:20px 0 15px;
+    font-size:24px;
+}
+
+.progress{
+    width:100%;
+    height:10px;
+    background:#07110e;
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:10px;
+}
+
+.progress div{
+    height:100%;
+    background:linear-gradient(90deg,#38d88f,#a4ffda);
+    border-radius:20px;
+}
+
+.missions{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.mission{
+    background:#081711;
+    border:1px solid #1d4335;
+    padding:15px;
+    border-radius:15px;
+}
+
+.mission.done{
+    border-color:#4cffac;
+}
+
+.mission small{
+    color:var(--muted);
+}
+
+.pack-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.pack-box{
+    min-height:410px;
+    border-radius:25px;
+    padding:20px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.25);
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.pack-box:before{
+    content:"";
+    position:absolute;
+    inset:-100%;
+    background:linear-gradient(
+        120deg,
+        transparent 38%,
+        rgba(255,255,255,.4) 50%,
+        transparent 62%
+    );
+    transform:rotate(20deg);
+    animation:shine 4s infinite;
+}
+
+@keyframes shine{
+    0%{transform:translateX(-70%) rotate(20deg)}
+    45%,100%{transform:translateX(70%) rotate(20deg)}
+}
+
+.bronze{
+    background:
+    radial-gradient(circle at 50% 10%,#d89145,transparent 32%),
+    linear-gradient(145deg,#54270f,#a95f25,#32170a);
+}
+
+.silver{
+    background:
+    radial-gradient(circle at 50% 10%,#fff,transparent 30%),
+    linear-gradient(145deg,#536674,#d8e5eb,#3e4e59);
+    color:#06100d;
+}
+
+.gold{
+    background:
+    radial-gradient(circle at 50% 10%,#fff2a1,transparent 32%),
+    linear-gradient(145deg,#704900,#e9ba35,#745000);
+}
+
+.pack-box>*{
+    position:relative;
+    z-index:2;
+}
+
+.pack-art{
+    height:245px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    perspective:900px;
+}
+
+.pack{
+    width:150px;
+    height:205px;
+    border-radius:13px 13px 28px 28px;
+    position:relative;
+    box-shadow:
+        15px 20px 35px rgba(0,0,0,.6),
+        inset 0 0 25px rgba(255,255,255,.2);
+    animation:packFloat 3s ease-in-out infinite;
+}
+
+@keyframes packFloat{
+    0%,100%{
+        transform:translateY(0) rotateY(-12deg) rotateZ(-3deg);
+    }
+    50%{
+        transform:translateY(-14px) rotateY(12deg) rotateZ(3deg);
+    }
+}
+
+.pack:before{
+    content:"PACKBALL";
+    position:absolute;
+    top:30px;
+    left:-18px;
+    width:185px;
+    background:rgba(0,0,0,.65);
+    padding:12px 0;
+    transform:rotate(-8deg);
+    font-weight:1000;
+    letter-spacing:2px;
+}
+
+.pack:after{
+    content:"★";
+    position:absolute;
+    bottom:22px;
+    left:0;
+    right:0;
+    text-align:center;
+    font-size:50px;
+}
+
+.bronze-pack{
+    background:linear-gradient(135deg,#51240e,#e69a45,#6a2d0e);
+    border:3px solid #ffbf6b;
+}
+
+.silver-pack{
+    background:linear-gradient(135deg,#526674,#f5ffff,#778b99);
+    border:3px solid white;
+}
+
+.gold-pack{
+    background:linear-gradient(135deg,#704600,#ffe16b,#a86e00);
+    border:3px solid #fff0a1;
+}
+
+.pack-box button,
+.primary{
+    border:0;
+    border-radius:12px;
+    padding:13px 22px;
+    background:#07130f;
+    color:white;
+    font-weight:bold;
+    transition:.2s;
+}
+
+.pack-box button:hover,
+.primary:hover{
+    transform:translateY(-2px) scale(1.03);
+    box-shadow:0 0 25px rgba(100,255,190,.25);
+}
+
+.price{
+    color:#ffe477;
+    font-weight:bold;
+    margin:10px 0 16px;
+}
+
+.search{
+    width:100%;
+    background:#06110d;
+    border:1px solid var(--border);
+    color:white;
+    padding:13px 15px;
+    border-radius:12px;
+    outline:none;
+    margin-bottom:15px;
+}
+
+.cards-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:15px;
+}
+
+.mini-card{
+    border-radius:17px;
+    padding:14px;
+    background:linear-gradient(145deg,#12372c,#07130f);
+    border:2px solid #4cffac;
+    min-height:260px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+}
+
+.mini-card.rare{
+    border-color:#68bfff;
+}
+
+.mini-card.epic{
+    border-color:#cf8cff;
+}
+
+.mini-card.legend{
+    border-color:#ffe477;
+}
+
+.mini-card img{
+    width:110px;
+    height:110px;
+    object-fit:cover;
+    object-position:top;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,.6);
+    margin:8px auto 12px;
+    display:block;
+}
+
+.mini-rating{
+    font-size:28px;
+    font-weight:1000;
+}
+
+.mini-name{
+    font-weight:bold;
+    margin-top:4px;
+}
+
+.mini-info{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:6px;
+}
+
+.filters{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:15px;
+}
+
+.filters button{
+    border:1px solid var(--border);
+    background:#091914;
+    color:white;
+    padding:9px 13px;
+    border-radius:10px;
+}
+
+.filters button.active{
+    background:#55d99c;
+    color:#06130e;
+}
+
+.pitch{
+    width:100%;
+    max-width:700px;
+    aspect-ratio:1.45;
+    margin:auto;
+    border-radius:20px;
+    background:
+    repeating-linear-gradient(
+        90deg,
+        #17633f 0,
+        #17633f 10%,
+        #1b7048 10%,
+        #1b7048 20%
+    );
+    border:5px solid #d9ffe9;
+    position:relative;
+    overflow:hidden;
+}
+
+.pitch:before{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:0;
+    bottom:0;
+    width:2px;
+    background:white;
+}
+
+.circle{
+    position:absolute;
+    width:25%;
+    aspect-ratio:1;
+    border:2px solid white;
+    border-radius:50%;
+    left:37.5%;
+    top:35%;
+}
+
+.dot{
+    position:absolute;
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#07140f;
+    border:3px solid #a4ffda;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:10px;
+    font-weight:bold;
+    text-align:center;
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 15px rgba(100,255,190,.4);
+}
+
+.match-box{
+    text-align:center;
+}
+
+.teams{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:50px;
+    margin:25px 0;
+}
+
+.team-name{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.score{
+    font-size:55px;
+    font-weight:1000;
+}
+
+.match-info{
+    color:var(--muted);
+    margin-bottom:20px;
+}
+
+.events{
+    text-align:left;
+    max-height:260px;
+    overflow:auto;
+    background:#06100d;
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:15px;
+}
+
+.event{
+    padding:9px;
+    border-bottom:1px solid #17372c;
+}
+
+.event:last-child{
+    border-bottom:0;
+}
+
+.market-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    margin-bottom:10px;
+    background:#081610;
+}
+
+.nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:72px;
+    z-index:60;
+    display:flex;
+    justify-content:center;
+    gap:5px;
+    background:rgba(3,10,8,.95);
+    border-top:1px solid var(--border);
+    backdrop-filter:blur(15px);
+    overflow-x:auto;
+}
+
+.nav button{
+    min-width:95px;
+    border:0;
+    background:transparent;
+    color:#78958a;
+    font-size:12px;
+}
+
+.nav button.active{
+    color:var(--green);
+}
+
+.nav-icon{
+    display:block;
+    font-size:21px;
+    margin-bottom:3px;
+}
+
+.toast{
+    position:fixed;
+    top:85px;
+    left:50%;
+    transform:translateX(-50%) translateY(-20px);
+    background:#112d24;
+    border:1px solid #4cffac;
+    padding:13px 20px;
+    border-radius:12px;
+    z-index:300;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+}
+
+/* =========================
+   PACK OPENING
+========================= */
+
+#openingOverlay{
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at center,rgba(24,105,78,.55),rgba(0,0,0,.98) 72%);
+    z-index:200;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+#openingOverlay.active{
+    display:flex;
+}
+
+.opening-title{
+    position:absolute;
+    top:8%;
+    font-size:24px;
+    letter-spacing:5px;
+    color:#a8ffe0;
+    text-shadow:0 0 20px #45ffb1;
+    opacity:0;
+    text-align:center;
+}
+
+.active .opening-title{
+    animation:titleAppear 1s forwards;
+}
+
+@keyframes titleAppear{
+    from{
+        opacity:0;
+        transform:translateY(-30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.opening-stage{
+    width:350px;
+    height:450px;
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    perspective:1200px;
+}
+
+.energy-ring{
+    position:absolute;
+    width:270px;
+    height:270px;
+    border:3px solid #65ffbd;
+    border-radius:50%;
+    box-shadow:
+        0 0 20px #65ffbd,
+        inset 0 0 20px #65ffbd;
+    opacity:0;
+}
+
+.active .energy-ring{
+    animation:ringSpin 2s linear infinite,ringAppear .5s forwards;
+}
+
+.energy-ring:nth-child(2){
+    width:330px;
+    height:330px;
+    border-color:white;
+    animation-delay:.2s;
+}
+
+.energy-ring:nth-child(3){
+    width:400px;
+    height:400px;
+    border-color:#e5b8ff;
+    animation-delay:.4s;
+}
+
+@keyframes ringAppear{
+    to{opacity:.6}
+}
+
+@keyframes ringSpin{
+    from{
+        transform:rotateX(65deg) rotateZ(0);
+    }
+    to{
+        transform:rotateX(65deg) rotateZ(360deg);
+    }
+}
+
+.opening-pack{
+    width:180px;
+    height:245px;
+    border-radius:15px 15px 35px 35px;
+    position:relative;
+    z-index:3;
+    box-shadow:
+        0 0 30px rgba(255,255,255,.3),
+        0 0 100px rgba(71,255,181,.5),
+        inset 0 0 30px rgba(255,255,255,.3);
+    transform-style:preserve-3d;
+    background:linear-gradient(135deg,#9b5a20,#e7a44d,#67300d);
+    border:4px solid #ffc477;
+}
+
+.opening-pack:before{
+    content:"PACKBALL";
+    position:absolute;
+    top:40px;
+    left:-20px;
+    width:215px;
+    text-align:center;
+    background:rgba(0,0,0,.7);
+    padding:15px 0;
+    transform:rotate(-8deg);
+    font-size:22px;
+    font-weight:900;
+    letter-spacing:3px;
+}
+
+.opening-pack:after{
+    content:"★";
+    position:absolute;
+    bottom:30px;
+    left:0;
+    right:0;
+    text-align:center;
+    font-size:65px;
+    color:white;
+}
+
+.active .opening-pack{
+    animation:packSequence 4.7s forwards;
+}
+
+@keyframes packSequence{
+    0%{
+        transform:scale(.3) rotateY(0);
+        opacity:0;
+    }
+
+    12%{
+        transform:scale(1) rotateY(0);
+        opacity:1;
+    }
+
+    25%{
+        transform:scale(1.08) rotateY(18deg);
+    }
+
+    35%{
+        transform:scale(1.1) rotateY(-18deg) translateX(-8px);
+    }
+
+    45%{
+        transform:scale(1.13) rotateY(20deg) translateX(8px);
+    }
+
+    55%{
+        transform:scale(1.17) rotateY(-23deg) rotateZ(-3deg);
+    }
+
+    68%{
+        transform:scale(1.25) rotateY(28deg);
+        filter:brightness(1.7);
+    }
+
+    78%{
+        transform:scale(1.4) rotateY(-30deg);
+        filter:brightness(3);
+    }
+
+    88%{
+        transform:scale(1.8);
+        filter:brightness(5);
+    }
+
+    100%{
+        transform:scale(2.8);
+        opacity:0;
+        filter:brightness(10);
+    }
+}
+
+.crack{
+    position:absolute;
+    width:4px;
+    height:100px;
+    background:white;
+    box-shadow:
+        0 0 15px white,
+        0 0 30px #72ffbd;
+    opacity:0;
+    z-index:5;
+}
+
+.crack.one{
+    left:45%;
+    top:30px;
+    transform:rotate(25deg);
+}
+
+.crack.two{
+    left:30%;
+    top:90px;
+    height:130px;
+    transform:rotate(-35deg);
+}
+
+.crack.three{
+    right:25%;
+    top:75px;
+    height:110px;
+    transform:rotate(45deg);
+}
+
+.active .crack{
+    animation:crackShow 4.1s forwards;
+}
+
+@keyframes crackShow{
+    0%,55%{
+        opacity:0;
+    }
+    65%,85%{
+        opacity:1;
+    }
+    100%{
+        opacity:0;
+    }
+}
+
+.flash{
+    position:absolute;
+    inset:0;
+    background:white;
+    opacity:0;
+    pointer-events:none;
+    z-index:20;
+}
+
+.active .flash{
+    animation:flashBang 5s forwards;
+}
+
+@keyframes flashBang{
+    0%,82%{
+        opacity:0;
+    }
+    86%{
+        opacity:1;
+    }
+    90%{
+        opacity:.1;
+    }
+    94%{
+        opacity:.8;
+    }
+    100%{
+        opacity:0;
+    }
+}
+
+#revealCard{
+    position:absolute;
+    z-index:30;
+    width:295px;
+    min-height:425px;
+    opacity:0;
+    transform:translateY(100px) scale(.3) rotateY(180deg);
+    pointer-events:none;
+}
+
+.active #revealCard{
+    animation:cardReveal 1.5s 4.8s cubic-bezier(.2,1.5,.4,1) forwards;
+}
+
+@keyframes cardReveal{
+    0%{
+        opacity:0;
+        transform:translateY(100px) scale(.3) rotateY(180deg);
+    }
+    60%{
+        opacity:1;
+        transform:translateY(-20px) scale(1.08) rotateY(-15deg);
+    }
+    100%{
+        opacity:1;
+        transform:translateY(0) scale(1) rotateY(0);
+    }
+}
+
+.player-card{
+    width:100%;
+    min-height:425px;
+    border-radius:20px;
+    padding:15px;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(145deg,#153f32,#071b15);
+    border:3px solid #a4ffda;
+    box-shadow:
+        0 0 20px #61ffbb,
+        0 0 70px rgba(76,255,185,.5);
+    text-align:center;
+}
+
+.player-card.rare{
+    border-color:#71c7ff;
+    box-shadow:0 0 25px #71c7ff,0 0 70px #277cc2;
+}
+
+.player-card.epic{
+    border-color:#d49aff;
+    box-shadow:0 0 25px #d49aff,0 0 80px #7622b9;
+}
+
+.player-card.legend{
+    border-color:#ffe477;
+    box-shadow:0 0 30px #ffe477,0 0 100px #c47d00;
+}
+
+.card-glare{
+    position:absolute;
+    inset:-100%;
+    background:linear-gradient(
+        120deg,
+        transparent 40%,
+        rgba(255,255,255,.55),
+        transparent 60%
+    );
+    transform:rotate(25deg);
+    animation:cardGlare 2s infinite;
+}
+
+@keyframes cardGlare{
+    from{
+        transform:translateX(-50%) rotate(25deg);
+    }
+    to{
+        transform:translateX(50%) rotate(25deg);
+    }
+}
+
+.card-rarity{
+    font-size:12px;
+    letter-spacing:3px;
+    font-weight:bold;
+}
+
+.card-rating{
+    position:absolute;
+    left:18px;
+    top:40px;
+    font-size:43px;
+    font-weight:1000;
+}
+
+.card-position{
+    position:absolute;
+    left:25px;
+    top:88px;
+    color:#b8d8cc;
+    font-weight:bold;
+}
+
+.card-photo{
+    width:175px;
+    height:175px;
+    object-fit:cover;
+    object-position:top;
+    border-radius:50%;
+    margin:35px auto 12px;
+    display:block;
+    border:3px solid rgba(255,255,255,.75);
+    background:#193d31;
+}
+
+.card-name{
+    font-size:23px;
+    font-weight:900;
+}
+
+.card-club{
+    color:#b4ccc2;
+    margin-top:7px;
+}
+
+.card-country{
+    margin-top:10px;
+}
+
+.continue-btn{
+    margin-top:25px;
+    padding:13px 35px;
+    border:0;
+    border-radius:12px;
+    background:#72ffbd;
+    color:#062117;
+    font-weight:bold;
+    cursor:pointer;
+    opacity:0;
+    position:relative;
+    z-index:50;
+}
+
+.active .continue-btn{
+    animation:buttonIn .5s 6s forwards;
+}
+
+@keyframes buttonIn{
+    to{opacity:1}
+}
+
+.particle{
+    position:absolute;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#a4ffdc;
+    box-shadow:0 0 15px currentColor;
+    left:50%;
+    top:50%;
+    z-index:10;
+    pointer-events:none;
+}
+
+@keyframes particleFly{
+    to{
+        transform:translate(var(--x),var(--y)) rotate(720deg);
+        opacity:0;
+    }
+}
+
+@media(max-width:800px){
+
+    .pack-grid{
+        grid-template-columns:1fr;
+    }
+
+    .stats-row{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .missions{
+        grid-template-columns:1fr;
+    }
+
+    .teams{
+        gap:20px;
+    }
+
+    .score{
+        font-size:40px;
+    }
+
+    .hero h1{
+        font-size:29px;
+    }
+
+    .opening-title{
+        font-size:16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">⚽ PACKBALL</div>
+    <div class="credits">🪙 <span id="credits">10000</span> crédits</div>
+</header>
+
+<main>
+
+<!-- ================= ACCUEIL ================= -->
+
+<section id="home" class="page active">
+
+    <div class="hero">
+        <h1>Bienvenue sur PACKBALL</h1>
+        <p>Construis ton équipe, ouvre des packs et deviens le meilleur.</p>
+
+        <div class="stats-row">
+            <div class="stat">
+                <span>NOTE ÉQUIPE</span>
+                <strong id="teamRating">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>NIVEAU</span>
+                <strong id="level">1</strong>
+            </div>
+
+            <div class="stat">
+                <span>MATCHS</span>
+                <strong id="matches">0</strong>
+            </div>
+
+            <div class="stat">
+                <span>COLLECTION</span>
+                <strong id="collectionCount">0</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Progression</h2>
+        <p id="xpText">0 / 100 XP</p>
+        <div class="progress">
+            <div id="xpBar" style="width:0%"></div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Missions</h2>
+
+        <div class="missions">
+
+            <div class="mission" id="missionPack">
+                <b>📦 Ouvrir 5 packs</b>
+                <p><span id="missionPackCount">0</span> / 5</p>
+                <small>Récompense : 1 500 crédits</small>
+            </div>
+
+            <div class="mission" id="missionMatch">
+                <b>⚽ Jouer 5 matchs</b>
+                <p><span id="missionMatchCount">0</span> / 5</p>
+                <small>Récompense : 2 000 crédits</small>
+            </div>
+
+            <div class="mission" id="missionRare">
+                <b>💎 Obtenir 3 joueurs rares</b>
+                <p><span id="missionRareCount">0</span> / 3</p>
+                <small>Récompense : 3 000 crédits</small>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+
+<!-- ================= PACKS ================= -->
+
+<section id="packs" class="page">
+
+    <div class="hero">
+        <h1>Ouverture de packs</h1>
+        <p>Le prochain grand joueur peut être dans ton prochain pack.</p>
+    </div>
+
+    <div class="pack-grid">
+
+        <div class="pack-box bronze">
+
+            <h2>PACK BRONZE</h2>
+
+            <div class="pack-art">
+                <div class="pack bronze-pack"></div>
+            </div>
+
+            <p>Joueur garanti</p>
+
+            <div class="price">500 crédits</div>
+
+            <button onclick="openPack('bronze')">
+                OUVRIR
+            </button>
+
+        </div>
+
+
+        <div class="pack-box silver">
+
+            <h2>PACK ARGENT</h2>
+
+            <div class="pack-art">
+                <div class="pack silver-pack"></div>
+            </div>
+
+            <p>Meilleures chances de rareté</p>
+
+            <div class="price">1 500 crédits</div>
+
+            <button onclick="openPack('silver')">
+                OUVRIR
+            </button>
+
+        </div>
+
+
+        <div class="pack-box gold">
+
+            <h2>PACK OR</h2>
+
+            <div class="pack-art">
+                <div class="pack gold-pack"></div>
+            </div>
+
+            <p>Chance de joueur légendaire</p>
+
+            <div class="price">5 000 crédits</div>
+
+            <button onclick="openPack('gold')">
+                OUVRIR
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= EQUIPE ================= -->
+
+<section id="team" class="page">
+
+    <div class="hero">
+        <h1>Mon équipe</h1>
+        <p>Place tes joueurs sur le terrain.</p>
+    </div>
+
+    <div class="panel">
+
+        <h2>Formation 4-3-3</h2>
+
+        <div class="pitch">
+
+            <div class="circle"></div>
+
+            <div class="dot" style="left:50%;top:91%">GB</div>
+
+            <div class="dot" style="left:18%;top:72%">DG</div>
+            <div class="dot" style="left:39%;top:75%">DC</div>
+            <div class="dot" style="left:61%;top:75%">DC</div>
+            <div class="dot" style="left:82%;top:72%">DD</div>
+
+            <div class="dot" style="left:28%;top:52%">MC</div>
+            <div class="dot" style="left:50%;top:58%">MDC</div>
+            <div class="dot" style="left:72%;top:52%">MC</div>
+
+            <div class="dot" style="left:20%;top:27%">AG</div>
+            <div class="dot" style="left:50%;top:18%">BU</div>
+            <div class="dot" style="left:80%;top:27%">AD</div>
+
+        </div>
+
+        <h2 style="margin-top:25px">Tes meilleurs joueurs</h2>
+
+        <div id="teamPlayers" class="cards-grid"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= COLLECTION ================= -->
+
+<section id="collection" class="page">
+
+    <div class="hero">
+        <h1>Collection</h1>
+        <p>Tous les joueurs que tu as obtenus.</p>
+    </div>
+
+    <div class="panel">
+
+        <input
+            class="search"
+            id="collectionSearch"
+            placeholder="🔎 Rechercher un joueur..."
+            oninput="renderCollection()"
+        >
+
+        <div class="filters">
+
+            <button class="active" onclick="setFilter('all',this)">
+                Tous
+            </button>
+
+            <button onclick="setFilter('rare',this)">
+                Rare
+            </button>
+
+            <button onclick="setFilter('epic',this)">
+                Épique
+            </button>
+
+            <button onclick="setFilter('legend',this)">
+                Légendaire
+            </button>
+
+        </div>
+
+        <div id="collectionGrid" class="cards-grid"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= MARCHE ================= -->
+
+<section id="market" class="page">
+
+    <div class="hero">
+        <h1>Marché</h1>
+        <p>Achete directement certains joueurs.</p>
+    </div>
+
+    <div class="panel">
+
+        <input
+            class="search"
+            id="marketSearch"
+            placeholder="🔎 Rechercher..."
+            oninput="renderMarket()"
+        >
+
+        <div id="marketList"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= MATCH ================= -->
+
+<section id="matchesPage" class="page">
+
+    <div class="hero">
+        <h1>Match</h1>
+        <p>Affronte une équipe contrôlée par l'ordinateur.</p>
+    </div>
+
+    <div class="panel match-box">
+
+        <h2>Match amical</h2>
+
+        <div class="teams">
+
+            <div>
+                <div class="team-name">PACKBALL FC</div>
+                <small>Ton équipe</small>
+            </div>
+
+            <div class="score" id="matchScore">
+                0 - 0
+            </div>
+
+            <div>
+                <div class="team-name">ADVERSAIRE</div>
+                <small>CPU</small>
+            </div>
+
+        </div>
+
+        <div class="match-info" id="matchInfo">
+            Prêt pour le coup d'envoi.
+        </div>
+
+        <button class="primary" onclick="playMatch()">
+            ⚽ JOUER LE MATCH
+        </button>
+
+        <div style="height:20px"></div>
+
+        <div class="events" id="matchEvents">
+            Aucun événement.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= STATS ================= -->
+
+<section id="stats" class="page">
+
+    <div class="hero">
+        <h1>Statistiques</h1>
+        <p>Ton parcours sur PACKBALL.</p>
+    </div>
+
+    <div class="stats-row">
+
+        <div class="stat">
+            <span>VICTOIRES</span>
+            <strong id="wins">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>DÉFAITES</span>
+            <strong id="losses">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>NULS</span>
+            <strong id="draws">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>PACKS</span>
+            <strong id="packsOpened">0</strong>
+        </div>
+
+    </div>
+
+    <div class="panel" style="margin-top:20px">
+
+        <h2>Statistiques de l'équipe</h2>
+
+        <p>Note moyenne : <b id="statsRating">0</b></p>
+        <br>
+        <p>Taux de victoire : <b id="winRate">0%</b></p>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- ================= NAVIGATION ================= -->
+
+<nav class="nav">
+
+    <button class="active" onclick="showPage('home',this)">
+        <span class="nav-icon">🏠</span>
+        Accueil
+    </button>
+
+    <button onclick="showPage('team',this)">
+        <span class="nav-icon">⚽</span>
+        Équipe
+    </button>
+
+    <button onclick="showPage('packs',this)">
+        <span class="nav-icon">📦</span>
+        Packs
+    </button>
+
+    <button onclick="showPage('collection',this)">
+        <span class="nav-icon">🃏</span>
+        Collection
+    </button>
+
+    <button onclick="showPage('market',this)">
+        <span class="nav-icon">🏪</span>
+        Marché
+    </button>
+
+    <button onclick="showPage('matchesPage',this)">
+        <span class="nav-icon">🏟️</span>
+        Match
+    </button>
+
+    <button onclick="showPage('stats',this)">
+        <span class="nav-icon">📊</span>
+        Stats
+    </button>
+
+</nav>
+
+
+<!-- ================= PACK OVERLAY ================= -->
+
+<div id="openingOverlay">
+
+    <div class="opening-title">
+        NOUVEAU JOUEUR DÉCOUVERT
+    </div>
+
+    <div class="opening-stage">
+
+        <div class="energy-ring"></div>
+        <div class="energy-ring"></div>
+        <div class="energy-ring"></div>
+
+        <div class="opening-pack">
+
+            <div class="crack one"></div>
+            <div class="crack two"></div>
+            <div class="crack three"></div>
+
+        </div>
+
+        <div id="revealCard"></div>
+
+    </div>
+
+    <button class="continue-btn" onclick="closeOpening()">
+        CONTINUER
+    </button>
+
+    <div class="flash"></div>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+
+/* =====================================================
+   JOUEURS
+===================================================== */
+
+const players=[
+
+{
+id:1,
+name:"Kylian Mbappé",
+rating:91,
+position:"BU",
+club:"Real Madrid",
+country:"🇫🇷",
+rarity:"legend",
+price:12000,
+image:"https://upload.wikimedia.org/wikipedia/commons/5/5c/Kylian_Mbapp%C3%A9_2019.jpg"
+},
+
+{
+id:2,
+name:"Erling Haaland",
+rating:91,
+position:"BU",
+club:"Manchester City",
+country:"🇳🇴",
+rarity:"legend",
+price:11500,
+image:"https://upload.wikimedia.org/wikipedia/commons/8/8c/Erling_Haaland_2023.jpg"
+},
+
+{
+id:3,
+name:"Jude Bellingham",
+rating:90,
+position:"MC",
+club:"Real Madrid",
+country:"🏴",
+rarity:"legend",
+price:11000,
+image:"https://upload.wikimedia.org/wikipedia/commons/6/6d/Jude_Bellingham_2023.jpg"
+},
+
+{
+id:4,
+name:"Vinícius Jr.",
+rating:90,
+position:"AG",
+club:"Real Madrid",
+country:"🇧🇷",
+rarity:"legend",
+price:10500,
+image:"https://upload.wikimedia.org/wikipedia/commons/1/1e/Vinicius_Junior_2022.jpg"
+},
+
+{
+id:5,
+name:"Mohamed Salah",
+rating:89,
+position:"AD",
+club:"Liverpool",
+country:"🇪🇬",
+rarity:"epic",
+price:9000,
+image:"https://upload.wikimedia.org/wikipedia/commons/8/8c/Mohamed_Salah_2018.jpg"
+},
+
+{
+id:6,
+name:"Ousmane Dembélé",
+rating:88,
+position:"AD",
+club:"PSG",
+country:"🇫🇷",
+rarity:"epic",
+price:8500,
+image:"https://upload.wikimedia.org/wikipedia/commons/8/8c/Ousmane_Demb%C3%A9l%C3%A9_2018.jpg"
+},
+
+{
+id:7,
+name:"Lamine Yamal",
+rating:86,
+position:"AD",
+club:"FC Barcelone",
+country:"🇪🇸",
+rarity:"epic",
+price:8000,
+image:"https://upload.wikimedia.org/wikipedia/commons/6/6c/Lamine_Yamal_2024.jpg"
+},
+
+{
+id:8,
+name:"Rodri",
+rating:89,
+position:"MDC",
+club:"Manchester City",
+country:"🇪🇸",
+rarity:"epic",
+price:8500,
+image:"https://upload.wikimedia.org/wikipedia/commons/0/0e/Rodri_2023.jpg"
+},
+
+{
+id:9,
+name:"Kevin De Bruyne",
+rating:90,
+position:"MC",
+club:"Manchester City",
+country:"🇧🇪",
+rarity:"legend",
+price:10000,
+image:"https://upload.wikimedia.org/wikipedia/commons/2/2d/Kevin_De_Bruyne_2018.jpg"
+},
+
+{
+id:10,
+name:"Virgil van Dijk",
+rating:89,
+position:"DC",
+club:"Liverpool",
+country:"🇳🇱",
+rarity:"epic",
+price:8500,
+image:"https://upload.wikimedia.org/wikipedia/commons/5/5c/Virgil_van_Dijk_2019.jpg"
+},
+
+{
+id:11,
+name:"Thibaut Courtois",
+rating:90,
+position:"GB",
+club:"Real Madrid",
+country:"🇧🇪",
+rarity:"legend",
+price:9500,
+image:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Thibaut_Courtois_2018.jpg"
+},
+
+{
+id:12,
+name:"Achraf Hakimi",
+rating:86,
+position:"DD",
+club:"PSG",
+country:"🇲🇦",
+rarity:"rare",
+price:6000,
+image:"https://upload.wikimedia.org/wikipedia/commons/4/4e/Achraf_Hakimi_2022.jpg"
+},
+
+{
+id:13,
+name:"Bukayo Saka",
+rating:87,
+position:"AD",
+club:"Arsenal",
+country:"🏴",
+rarity:"rare",
+price:6200,
+image:"https://upload.wikimedia.org/wikipedia/commons/8/8e/Bukayo_Saka_2022.jpg"
+},
+
+{
+id:14,
+name:"Pedri",
+rating:86,
+position:"MC",
+club:"FC Barcelone",
+country:"🇪🇸",
+rarity:"rare",
+price:5800,
+image:"https://upload.wikimedia.org/wikipedia/commons/2/2e/Pedri_2022.jpg"
+},
+
+{
+id:15,
+name:"Frenkie de Jong",
+rating:87,
+position:"MC",
+club:"FC Barcelone",
+country:"🇳🇱",
+rarity:"rare",
+price:6000,
+image:"https://upload.wikimedia.org/wikipedia/commons/3/3f/Frenkie_de_Jong_2021.jpg"
+},
+
+{
+id:16,
+name:"Harry Kane",
+rating:90,
+position:"BU",
+club:"Bayern Munich",
+country:"🏴",
+rarity:"legend",
+price:9000,
+image:"https://upload.wikimedia.org/wikipedia/commons/9/9b/Harry_Kane_2018.jpg"
+},
+
+{
+id:17,
+name:"Robert Lewandowski",
+rating:89,
+position:"BU",
+club:"FC Barcelone",
+country:"🇵🇱",
+rarity:"epic",
+price:8200,
+image:"https://upload.wikimedia.org/wikipedia/commons/5/5e/Robert_Lewandowski_2018.jpg"
+},
+
+{
+id:18,
+name:"Antoine Griezmann",
+rating:88,
+position:"BU",
+club:"Atlético Madrid",
+country:"🇫🇷",
+rarity:"epic",
+price:7600,
+image:"https://upload.wikimedia.org/wikipedia/commons/4/41/Antoine_Griezmann_2018.jpg"
+},
+
+{
+id:19,
+name:"Mike Maignan",
+rating:87,
+position:"GB",
+club:"AC Milan",
+country:"🇫🇷",
+rarity:"rare",
+price:5500,
+image:"https://upload.wikimedia.org/wikipedia/commons/0/0d/Mike_Maignan_2022.jpg"
+},
+
+{
+id:20,
+name:"Nuno Mendes",
+rating:86,
+position:"DG",
+club:"PSG",
+country:"🇵🇹",
+rarity:"rare",
+price:5200,
+image:"https://upload.wikimedia.org/wikipedia/commons/0/07/Nuno_Mendes_2022.jpg"
+},
+
+{
+id:21,
+name:"Vitinha",
+rating:86,
+position:"MC",
+club:"PSG",
+country:"🇵🇹",
+rarity:"rare",
+price:5200,
+image:"https://upload.wikimedia.org/wikipedia/commons/7/7c/Vitinha_2022.jpg"
+},
+
+{
+id:22,
+name:"Rafael Leão",
+rating:86,
+position:"AG",
+club:"AC Milan",
+country:"🇵🇹",
+rarity:"rare",
+price:5700,
+image:"https://upload.wikimedia.org/wikipedia/commons/8/8e/Rafael_Leao_2022.jpg"
+},
+
+{
+id:23,
+name:"Donnarumma",
+rating:89,
+position:"GB",
+club:"PSG",
+country:"🇮🇹",
+rarity:"epic",
+price:8000,
+image:"https://upload.wikimedia.org/wikipedia/commons/2/2e/Gianluigi_Donnarumma_2021.jpg"
+},
+
+{
+id:24,
+name:"Alisson",
+rating:89,
+position:"GB",
+club:"Liverpool",
+country:"🇧🇷",
+rarity:"epic",
+price:8000,
+image:"https://upload.wikimedia.org/wikipedia/commons/1/1c/Alisson_Becker_2018.jpg"
+},
+
+{
+id:25,
+name:"Ederson",
+rating:88,
+position:"GB",
+club:"Manchester City",
+country:"🇧🇷",
+rarity:"epic",
+price:7500,
+image:"https://upload.wikimedia.org/wikipedia/commons/2/21/Ederson_2018.jpg"
+},
+
+{
+id:26,
+name:"Marquinhos",
+rating:87,
+position:"DC",
+club:"PSG",
+country:"🇧🇷",
+rarity:"rare",
+price:6000,
+image:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Marquinhos_2018.jpg"
+},
+
+{
+id:27,
+name:"Federico Valverde",
+rating:88,
+position:"MC",
+club:"Real Madrid",
+country:"🇺🇾",
+rarity:"epic",
+price:7200,
+image:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Federico_Valverde_2022.jpg"
+},
+
+{
+id:28,
+name:"Phil Foden",
+rating:88,
+position:"AD",
+club:"Manchester City",
+country:"🏴",
+rarity:"epic",
+price:7200,
+image:"https://upload.wikimedia.org/wikipedia/commons/4/4d/Phil_Foden_2022.jpg"
+},
+
+{
+id:29,
+name:"Cole Palmer",
+rating:86,
+position:"MOC",
+club:"Chelsea",
+country:"🏴",
+rarity:"rare",
+price:6000,
+image:"https://upload.wikimedia.org/wikipedia/commons/6/6d/Cole_Palmer_2022.jpg"
+},
+
+{
+id:30,
+name:"Lautaro Martínez",
+rating:88,
+position:"BU",
+club:"Inter Milan",
+country:"🇦🇷",
+rarity:"epic",
+price:7200,
+image:"https://upload.wikimedia.org/wikipedia/commons/7/7b/Lautaro_Martinez_2018.jpg"
+},
+
+{
+id:31,
+name:"Victor Osimhen",
+rating:88,
+position:"BU",
+club:"Galatasaray",
+country:"🇳🇬",
+rarity:"epic",
+price:7200,
+image:"https://upload.wikimedia.org/wikipedia/commons/4/4f/Victor_Osimhen_2022.jpg"
+},
+
+{
+id:32,
+name:"Son Heung-min",
+rating:87,
+position:"AG",
+club:"Tottenham",
+country:"🇰🇷",
+rarity:"rare",
+price:6500,
+image:"https://upload.wikimedia.org/wikipedia/commons/8/8c/Son_Heung-min_2018.jpg"
+},
+
+{
+id:33,
+name:"Rúben Dias",
+rating:87,
+position:"DC",
+club:"Manchester City",
+country:"🇵🇹",
+rarity:"rare",
+price:6200,
+image:"https://upload.wikimedia.org/wikipedia/commons/5/5f/Ruben_Dias_2021.jpg"
+},
+
+{
+id:34,
+name:"Ronald Araújo",
+rating:86,
+position:"DC",
+club:"FC Barcelone",
+country:"🇺🇾",
+rarity:"rare",
+price:5800,
+image:"https://upload.wikimedia.org/wikipedia/commons/1/17/Ronald_Araujo_2022.jpg"
+},
+
+{
+id:35,
+name:"Theo Hernández",
+rating:87,
+position:"DG",
+club:"AC Milan",
+country:"🇫🇷",
+rarity:"rare",
+price:6200,
+image:"https://upload.wikimedia.org/wikipedia/commons/0/0d/Theo_Hernandez_2022.jpg"
+},
+
+{
+id:36,
+name:"Joshua Kimmich",
+rating:88,
+position:"MDC",
+club:"Bayern Munich",
+country:"🇩🇪",
+rarity:"epic",
+price:7000,
+image:"https://upload.wikimedia.org/wikipedia/commons/1/1e/Joshua_Kimmich_2018.jpg"
+},
+
+{
+id:37,
+name:"Jamal Musiala",
+rating:88,
+position:"MOC",
+club:"Bayern Munich",
+country:"🇩🇪",
+rarity:"epic",
+price:7000,
+image:"https://upload.wikimedia.org/wikipedia/commons/6/6e/Jamal_Musiala_2022.jpg"
+},
+
+{
+id:38,
+name:"Florian Wirtz",
+rating:88,
+position:"MOC",
+club:"Bayer Leverkusen",
+country:"🇩🇪",
+rarity:"epic",
+price:7000,
+image:"https://upload.wikimedia.org/wikipedia/commons/2/2e/Florian_Wirtz_2022.jpg"
+},
+
+{
+id:39,
+name:"Trent Alexander-Arnold",
+rating:86,
+position:"DD",
+club:"Liverpool",
+country:"🏴",
+rarity:"rare",
+price:5500,
+image:"https://upload.wikimedia.org/wikipedia/commons/1/14/Trent_Alexander-Arnold_2018.jpg"
+},
+
+{
+id:40,
+name:"William Saliba",
+rating:87,
+position:"DC",
+club:"Arsenal",
+country:"🇫🇷",
+rarity:"rare",
+price:6200,
+image:"https://upload.wikimedia.org/wikipedia/commons/4/45/William_Saliba_2022.jpg"
+}
+
+];
+
+
+/* =====================================================
+   SAUVEGARDE
+===================================================== */
+
+let game=JSON.parse(
+    localStorage.getItem("PACKBALL_ULTIMATE")
+) || {
+
+    credits:10000,
+    xp:0,
+    level:1,
+
+    collection:[],
+
+    matches:0,
+    wins:0,
+    losses:0,
+    draws:0,
+
+    packs:0,
+
+    missions:{
+        pack:0,
+        match:0,
+        rare:0
+    },
+
+    claimed:{
+        pack:false,
+        match:false,
+        rare:false
+    }
+
+};
+
+let filter="all";
+let opening=false;
+
+
+/* =====================================================
+   UTILITAIRES
+===================================================== */
+
+function saveGame(){
+
+    localStorage.setItem(
+        "PACKBALL_ULTIMATE",
+        JSON.stringify(game)
+    );
+
+}
+
+function getPlayer(id){
+
+    return players.find(p=>p.id===id);
+
+}
+
+function rarityText(r){
+
+    if(r==="legend") return "LÉGENDAIRE";
+    if(r==="epic") return "ÉPIQUE";
+    if(r==="rare") return "RARE";
+
+    return "JOUEUR";
+}
+
+function toast(text){
+
+    const t=document.getElementById("toast");
+
+    t.textContent=text;
+    t.classList.add("show");
+
+    setTimeout(()=>{
+        t.classList.remove("show");
+    },2500);
+
+}
+
+function initials(name){
+
+    return name
+        .split(" ")
+        .map(x=>x[0])
+        .slice(0,2)
+        .join("");
+
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function showPage(id,button){
+
+    document.querySelectorAll(".page")
+        .forEach(p=>p.classList.remove("active"));
+
+    document.getElementById(id)
+        .classList.add("active");
+
+    document.querySelectorAll(".nav button")
+        .forEach(b=>b.classList.remove("active"));
+
+    if(button){
+        button.classList.add("active");
+    }
+
+    updateUI();
+
+}
+
+
+/* =====================================================
+   XP / NIVEAU
+===================================================== */
+
+function addXP(amount){
+
+    game.xp+=amount;
+
+    while(game.xp>=100){
+
+        game.xp-=100;
+        game.level++;
+
+        game.credits+=1000;
+
+        toast(
+            "🎉 Niveau "+game.level+
+            " ! +1 000 crédits"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   NOTE EQUIPE
+===================================================== */
+
+function teamRating(){
+
+    if(game.collection.length===0){
+        return 0;
+    }
+
+    const values=game.collection
+        .map(id=>getPlayer(id))
+        .filter(Boolean)
+        .map(p=>p.rating)
+        .sort((a,b)=>b-a)
+        .slice(0,11);
+
+    if(values.length===0){
+        return 0;
+    }
+
+    return Math.round(
+        values.reduce((a,b)=>a+b,0)/values.length
+    );
+
+}
+
+
+/* =====================================================
+   PACKS
+===================================================== */
+
+function choosePlayer(type){
+
+    let pool=[];
+
+    if(type==="bronze"){
+
+        pool=players.filter(p=>
+            p.rarity==="rare" ||
+            p.rating<=86
+        );
+
+    }
+
+    if(type==="silver"){
+
+        pool=players.filter(p=>
+            p.rarity==="rare" ||
+            p.rarity==="epic"
+        );
+
+    }
+
+    if(type==="gold"){
+
+        pool=players.filter(p=>
+            p.rarity==="epic" ||
+            p.rarity==="legend"
+        );
+
+    }
+
+    return pool[
+        Math.floor(Math.random()*pool.length)
+    ];
+
+}
+
+
+function openPack(type){
+
+    if(opening) return;
+
+    const prices={
+        bronze:500,
+        silver:1500,
+        gold:5000
+    };
+
+    const price=prices[type];
+
+    if(game.credits<price){
+
+        toast("❌ Pas assez de crédits");
+
+        return;
+    }
+
+    game.credits-=price;
+
+    game.packs++;
+    game.missions.pack++;
+
+    const player=choosePlayer(type);
+
+    if(
+        player.rarity==="rare" ||
+        player.rarity==="epic" ||
+        player.rarity==="legend"
+    ){
+        game.missions.rare++;
+    }
+
+    if(!game.collection.includes(player.id)){
+        game.collection.push(player.id);
+    }
+
+    addXP(20);
+
+    saveGame();
+    updateUI();
+
+    opening=true;
+
+    const overlay=
+        document.getElementById("openingOverlay");
+
+    const stagePack=
+        document.querySelector(".opening-pack");
+
+    const card=
+        document.getElementById("revealCard");
+
+    stagePack.className="opening-pack";
+
+    if(type==="bronze"){
+
+        stagePack.style.background=
+        "linear-gradient(135deg,#9b5a20,#e7a44d,#67300d)";
+
+        stagePack.style.borderColor="#ffc477";
+
+    }
+
+    if(type==="silver"){
+
+        stagePack.style.background=
+        "linear-gradient(135deg,#526674,#f5ffff,#778b99)";
+
+        stagePack.style.borderColor="white";
+
+    }
+
+    if(type==="gold"){
+
+        stagePack.style.background=
+        "linear-gradient(135deg,#704600,#ffe16b,#a86e00)";
+
+        stagePack.style.borderColor="#fff0a1";
+
+    }
+
+    card.innerHTML="";
+
+    overlay.classList.remove("active");
+
+    void overlay.offsetWidth;
+
+    overlay.classList.add("active");
+
+    createParticles();
+
+    setTimeout(()=>{
+
+        card.innerHTML=`
+
+            <div class="player-card ${player.rarity}">
+
+                <div class="card-glare"></div>
+
+                <div class="card-rarity">
+                    ${rarityText(player.rarity)}
+                </div>
+
+                <div class="card-rating">
+                    ${player.rating}
+                </div>
+
+                <div class="card-position">
+                    ${player.position}
+                </div>
+
+                <img
+                    class="card-photo"
+                    src="${player.image}"
+                    alt="${player.name}"
+                    onerror="
+                        this.style.display='none';
+                        this.nextElementSibling.style.display='flex';
+                    "
+                >
+
+                <div
+                    style="
+                    display:none;
+                    width:175px;
+                    height:175px;
+                    margin:35px auto 12px;
+                    border-radius:50%;
+                    background:#193d31;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:45px;
+                    font-weight:bold;
+                    "
+                >
+                    ${initials(player.name)}
+                </div>
+
+                <div class="card-name">
+                    ${player.name}
+                </div>
+
+                <div class="card-club">
+                    ${player.club}
+                </div>
+
+                <div class="card-country">
+                    ${player.country}
+                </div>
+
+            </div>
+        `;
+
+        if(player.rarity==="legend"){
+            createParticles(55);
+        }
+        else if(player.rarity==="epic"){
+            createParticles(40);
+        }
+        else{
+            createParticles(25);
+        }
+
+        checkMissions();
+
+    },4700);
+
+}
+
+
+/* =====================================================
+   PARTICULES
+===================================================== */
+
+function createParticles(amount=35){
+
+    const overlay=
+        document.getElementById("openingOverlay");
+
+    for(let i=0;i<amount;i++){
+
+        const p=document.createElement("div");
+
+        p.className="particle";
+
+        const x=
+            (Math.random()*800-400)+"px";
+
+        const y=
+            (Math.random()*800-400)+"px";
+
+        p.style.setProperty("--x",x);
+        p.style.setProperty("--y",y);
+
+        p.style.left=
+            (45+Math.random()*10)+"%";
+
+        p.style.top=
+            (43+Math.random()*14)+"%";
+
+        p.style.background=[
+            "#72ffbd",
+            "#ffffff",
+            "#ffe477",
+            "#b98cff",
+            "#71c7ff"
+        ][Math.floor(Math.random()*5)];
+
+        p.style.animation=
+            `particleFly ${1+Math.random()*2}s ease-out forwards`;
+
+        overlay.appendChild(p);
+
+        setTimeout(()=>{
+            p.remove();
+        },3000);
+
+    }
+
+}
+
+
+/* =====================================================
+   FERMER PACK
+===================================================== */
+
+function closeOpening(){
+
+    const overlay=
+        document.getElementById("openingOverlay");
+
+    overlay.classList.remove("active");
+
+    opening=false;
+
+    updateUI();
+
+}
+
+
+/* =====================================================
+   COLLECTION
+===================================================== */
+
+function setFilter(value,button){
+
+    filter=value;
+
+    document
+        .querySelectorAll(".filters button")
+        .forEach(b=>b.classList.remove("active"));
+
+    button.classList.add("active");
+
+    renderCollection();
+
+}
+
+
+function renderCollection(){
+
+    const grid=
+        document.getElementById("collectionGrid");
+
+    const search=
+        (
+            document.getElementById(
+                "collectionSearch"
+            )?.value || ""
+        ).toLowerCase();
+
+    let list=
+        game.collection
+        .map(id=>getPlayer(id))
+        .filter(Boolean);
+
+    if(filter!=="all"){
+
+        list=list.filter(
+            p=>p.rarity===filter
+        );
+
+    }
+
+    if(search){
+
+        list=list.filter(p=>
+            p.name.toLowerCase()
+            .includes(search)
+        );
+
+    }
+
+    if(list.length===0){
+
+        grid.innerHTML=`
+            <div style="
+                color:#8ca79c;
+                padding:25px;
+            ">
+                Ta collection est vide.
+                Ouvre ton premier pack !
+            </div>
+        `;
+
+        return;
+    }
+
+    grid.innerHTML=
+        list
+        .sort((a,b)=>b.rating-a.rating)
+        .map(miniCard)
+        .join("");
+
+}
+
+
+function miniCard(player){
+
+    return `
+
+        <div class="mini-card ${player.rarity}">
+
+            <div class="mini-rating">
+                ${player.rating}
+            </div>
+
+            <img
+                src="${player.image}"
+                alt="${player.name}"
+                onerror="
+                    this.style.display='none';
+                    this.nextElementSibling.style.display='flex';
+                "
+            >
+
+            <div style="
+                display:none;
+                width:110px;
+                height:110px;
+                margin:8px auto 12px;
+                border-radius:50%;
+                background:#193d31;
+                align-items:center;
+                justify-content:center;
+                font-size:30px;
+                font-weight:bold;
+            ">
+                ${initials(player.name)}
+            </div>
+
+            <div class="mini-name">
+                ${player.name}
+            </div>
+
+            <div class="mini-info">
+                ${player.position} • ${player.club}
+            </div>
+
+            <div class="mini-info">
+                ${rarityText(player.rarity)}
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   MARCHE
+===================================================== */
+
+function renderMarket(){
+
+    const list=
+        document.getElementById("marketList");
+
+    const search=
+        (
+            document.getElementById(
+                "marketSearch"
+            )?.value || ""
+        ).toLowerCase();
+
+    let available=
+        players.filter(p=>
+            !game.collection.includes(p.id)
+        );
+
+    if(search){
+
+        available=
+            available.filter(p=>
+                p.name
+                .toLowerCase()
+                .includes(search)
+            );
+
+    }
+
+    available=
+        available
+        .sort((a,b)=>b.rating-a.rating)
+        .slice(0,20);
+
+    if(available.length===0){
+
+        list.innerHTML=`
+            <p style="color:#8ca79c">
+                Aucun joueur disponible.
+            </p>
+        `;
+
+        return;
+    }
+
+    list.innerHTML=
+        available
+        .map(player=>`
+
+            <div class="market-item">
+
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:12px;
+                ">
+
+                    <img
+                        src="${player.image}"
+                        style="
+                            width:55px;
+                            height:55px;
+                            object-fit:cover;
+                            object-position:top;
+                            border-radius:50%;
+                        "
+                        onerror="
+                            this.style.display='none'
+                        "
+                    >
+
+                    <div>
+                        <b>${player.name}</b>
+                        <div style="
+                            color:#8ca79c;
+                            font-size:12px;
+                        ">
+                            ${player.rating}
+                            •
+                            ${player.position}
+                            •
+                            ${player.club}
+                        </div>
+                    </div>
+
+                </div>
+
+                <button
+                    class="primary"
+                    onclick="buyPlayer(${player.id})"
+                >
+                    🪙 ${player.price}
+                </button>
+
+            </div>
+
+        `)
+        .join("");
+
+}
+
+
+function buyPlayer(id){
+
+    const player=getPlayer(id);
+
+    if(!player) return;
+
+    if(game.credits<player.price){
+
+        toast("❌ Pas assez de crédits");
+
+        return;
+    }
+
+    game.credits-=player.price;
+
+    game.collection.push(player.id);
+
+    addXP(10);
+
+    saveGame();
+
+    updateUI();
+
+    toast(
+        "✅ "+player.name+
+        " rejoint ton équipe !"
+    );
+
+}
+
+
+/* =====================================================
+   EQUIPE
+===================================================== */
+
+function renderTeam(){
+
+    const container=
+        document.getElementById("teamPlayers");
+
+    const list=
+        game.collection
+        .map(id=>getPlayer(id))
+        .filter(Boolean)
+        .sort((a,b)=>b.rating-a.rating)
+        .slice(0,11);
+
+    if(list.length===0){
+
+        container.innerHTML=`
+            <p style="color:#8ca79c">
+                Ouvre des packs pour construire ton équipe.
+            </p>
+        `;
+
+        return;
+    }
+
+    container.innerHTML=
+        list.map(miniCard).join("");
+
+}
+
+
+/* =====================================================
+   MATCH
+===================================================== */
+
+function poisson(lambda){
+
+    let L=Math.exp(-lambda);
+    let k=0;
+    let p=1;
+
+    do{
+
+        k++;
+        p*=Math.random();
+
+    }while(p>L);
+
+    return k-1;
+
+}
+
+
+function simulateMatch(myRating,oppRating){
+
+    const advantage=
+        (myRating-80)*0.025;
+
+    let myGoals=
+        Math.min(
+            6,
+            poisson(
+                Math.max(
+                    .35,
+                    1.25+advantage
+                )
+            )
+        );
+
+    let oppGoals=
+        Math.min(
+            6,
+            poisson(
+                Math.max(
+                    .3,
+                    1.15-advantage
+                )
+            )
+        );
+
+    const events=[];
+
+    const goalEvents=[];
+
+    for(let i=0;i<myGoals;i++){
+
+        goalEvents.push({
+            minute:5+Math.floor(
+                Math.random()*85
+            ),
+            team:"PACKBALL",
+            type:"goal"
+        });
+
+    }
+
+    for(let i=0;i<oppGoals;i++){
+
+        goalEvents.push({
+            minute:5+Math.floor(
+                Math.random()*85
+            ),
+            team:"ADVERSAIRE",
+            type:"goal"
+        });
+
+    }
+
+    goalEvents.sort(
+        (a,b)=>a.minute-b.minute
+    );
+
+    goalEvents.forEach(e=>{
+
+        if(e.team==="PACKBALL"){
+
+            events.push(
+                `⚽ ${e.minute}' — BUT ! PACKBALL`
+            );
+
+        }else{
+
+            events.push(
+                `⚽ ${e.minute}' — But adverse`
+            );
+
+        }
+
+    });
+
+    const extras=[
+        "🧤 Parade du gardien",
+        "🟨 Carton jaune",
+        "🚩 Hors-jeu",
+        "💥 Frappe sur le poteau",
+        "🎯 Frappe cadrée",
+        "🏃 Remplacement",
+        "🩹 Joueur au sol",
+        "📺 VAR en cours",
+        "🚩 Corner",
+        "💨 Frappe non cadrée"
+    ];
+
+    for(let i=0;i<8;i++){
+
+        events.push(
+            `${10+Math.floor(Math.random()*78)}' — `+
+            extras[
+                Math.floor(
+                    Math.random()*extras.length
+                )
+            ]
+        );
+
+    }
+
+    events.push("⏱️ 45' — Mi-temps");
+    events.push("⏱️ 90' — Fin du match");
+
+    events.sort(
+        ()=>Math.random()-.5
+    );
+
+    return {
+
+        myGoals,
+        oppGoals,
+
+        possession:
+            Math.round(
+                50+
+                (myRating-oppRating)*.3+
+                (Math.random()*10-5)
+            ),
+
+        shots:
+            7+Math.floor(Math.random()*10),
+
+        shotsOnTarget:
+            3+Math.floor(Math.random()*6),
+
+        corners:
+            2+Math.floor(Math.random()*7),
+
+        events
+
+    };
+
+}
+
+
+function playMatch(){
+
+    const button=
+        document.querySelector(
+            '#matchesPage .primary'
+        );
+
+    if(button.disabled) return;
+
+    button.disabled=true;
+
+    document.getElementById("matchEvents")
+        .innerHTML="";
+
+    document.getElementById("matchScore")
+        .textContent="0 - 0";
+
+    document.getElementById("matchInfo")
+        .textContent="Coup d'envoi...";
+
+    const myRating=
+        teamRating() || 75;
+
+    const oppRating=
+        75+
+        Math.floor(
+            Math.random()*16
+        );
+
+    const result=
+        simulateMatch(
+            myRating,
+            oppRating
+        );
+
+    game.matches++;
+    game.missions.match++;
+
+    if(result.myGoals>result.oppGoals){
+
+        game.wins++;
+
+        game.credits+=1500;
+
+        addXP(50);
+
+    }
+    else if(result.myGoals<result.oppGoals){
+
+        game.losses++;
+
+        game.credits+=500;
+
+        addXP(20);
+
+    }
+    else{
+
+        game.draws++;
+
+        game.credits+=800;
+
+        addXP(30);
+
+    }
+
+    saveGame();
+
+    let index=0;
+
+    const eventBox=
+        document.getElementById(
+            "matchEvents"
+        );
+
+    const timer=setInterval(()=>{
+
+        if(index>=result.events.length){
+
+            clearInterval(timer);
+
+            document.getElementById(
+                "matchScore"
+            ).textContent=
+                result.myGoals+
+                " - "+
+                result.oppGoals;
+
+            document.getElementById(
+                "matchInfo"
+            ).textContent=
+                `Possession ${result.possession}% • `+
+                `${result.shots} tirs • `+
+                `${result.shotsOnTarget} cadrés • `+
+                `${result.corners} corners`;
+
+            button.disabled=false;
+
+            updateUI();
+
+            return;
+        }
+
+        const event=
+            document.createElement("div");
+
+        event.className="event";
+
+        event.textContent=
+            result.events[index];
+
+        eventBox.appendChild(event);
+
+        eventBox.scrollTop=
+            eventBox.scrollHeight;
+
+        index++;
+
+    },350);
+
+}
+
+
+/* =====================================================
+   MISSIONS
+===================================================== */
+
+function checkMissions(){
+
+    if(
+        game.missions.pack>=5 &&
+        !game.claimed.pack
+    ){
+
+        game.claimed.pack=true;
+        game.credits+=1500;
+
+        toast(
+            "🎁 Mission packs terminée : +1 500"
+        );
+
+    }
+
+    if(
+        game.missions.match>=5 &&
+        !game.claimed.match
+    ){
+
+        game.claimed.match=true;
+        game.credits+=2000;
+
+        toast(
+            "🎁 Mission matchs terminée : +2 000"
+        );
+
+    }
+
+    if(
+        game.missions.rare>=3 &&
+        !game.claimed.rare
+    ){
+
+        game.claimed.rare=true;
+        game.credits+=3000;
+
+        toast(
+            "🎁 Mission joueurs rares : +3 000"
+        );
+
+    }
+
+    saveGame();
+
+}
+
+
+/* =====================================================
+   UI
+===================================================== */
+
+function updateUI(){
+
+    document.getElementById("credits")
+        .textContent=
+        game.credits.toLocaleString("fr-FR");
+
+    document.getElementById("level")
+        .textContent=
+        game.level;
+
+    document.getElementById("matches")
+        .textContent=
+        game.matches;
+
+    document.getElementById("collectionCount")
+        .textContent=
+        game.collection.length;
+
+    document.getElementById("teamRating")
+        .textContent=
+        teamRating();
+
+    document.getElementById("xpText")
+        .textContent=
+        `${game.xp} / 100 XP`;
+
+    document.getElementById("xpBar")
+        .style.width=
+        Math.min(game.xp,100)+"%";
+
+    document.getElementById("wins")
+        .textContent=
+        game.wins;
+
+    document.getElementById("losses")
+        .textContent=
+        game.losses;
+
+    document.getElementById("draws")
+        .textContent=
+        game.draws;
+
+    document.getElementById("packsOpened")
+        .textContent=
+        game.packs;
+
+    document.getElementById("statsRating")
+        .textContent=
+        teamRating();
+
+    document.getElementById("winRate")
+        .textContent=
+        game.matches===0
+        ? "0%"
+        : Math.round(
+            game.wins/game.matches*100
+        )+"%";
+
+    document.getElementById("missionPackCount")
+        .textContent=
+        Math.min(game.missions.pack,5);
+
+    document.getElementById("missionMatchCount")
+        .textContent=
+        Math.min(game.missions.match,5);
+
+    document.getElementById("missionRareCount")
+        .textContent=
+        Math.min(game.missions.rare,3);
+
+    document.getElementById("missionPack")
+        .classList.toggle(
+            "done",
+            game.missions.pack>=5
+        );
+
+    document.getElementById("missionMatch")
+        .classList.toggle(
+            "done",
+            game.missions.match>=5
+        );
+
+    document.getElementById("missionRare")
+        .classList.toggle(
+            "done",
+            game.missions.rare>=3
+        );
+
+    renderCollection();
+    renderMarket();
+    renderTeam();
+
+}
+
+
+/* =====================================================
+   LANCEMENT
+===================================================== */
+
+updateUI();
+
+</script>
+
+</body>
+</html>
